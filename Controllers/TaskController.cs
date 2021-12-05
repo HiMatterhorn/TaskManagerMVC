@@ -1,9 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using TaskManagerMVC.Models;
 
 namespace TaskManagerMVC.Controllers
@@ -16,7 +13,7 @@ namespace TaskManagerMVC.Controllers
             new TaskModel(){TaskId =2, Name = "Zrobić obiad", Description = "Pierogi", Done = false },
 
         };
-    
+
         // GET: TaskController
         public ActionResult Index()
         {
@@ -32,22 +29,20 @@ namespace TaskManagerMVC.Controllers
         // GET: TaskController/Create
         public ActionResult Create()
         {
-            return View();
+            return View(new TaskModel());
         }
 
         // POST: TaskController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public ActionResult Create(TaskModel taskModel)
         {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            taskModel.TaskId = tasks.Count + 1;
+            tasks.Add(taskModel);
+            return RedirectToAction(nameof(Index));
+
+
+
         }
 
         // GET: TaskController/Edit/5
