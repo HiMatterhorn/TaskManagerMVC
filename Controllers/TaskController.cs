@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Linq;
 using TaskManagerMVC.Models;
 
 namespace TaskManagerMVC.Controllers
@@ -23,7 +24,7 @@ namespace TaskManagerMVC.Controllers
         // GET: TaskController/Details/5
         public ActionResult Details(int id)
         {
-            return View();
+            return View(tasks.FirstOrDefault(x => x.TaskId == id));
         }
 
         // GET: TaskController/Create
