@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
 using TaskManagerMVC.Models;
@@ -14,6 +13,11 @@ namespace TaskManagerMVC.Controllers
             new TaskModel(){TaskId =2, Name = "Zrobić obiad", Description = "Pierogi", Done = false },
 
         };
+
+        private static int _id = tasks.Count;
+
+
+
 
         // GET: TaskController
         public ActionResult Index()
@@ -38,12 +42,19 @@ namespace TaskManagerMVC.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(TaskModel taskModel)
         {
-            taskModel.TaskId = tasks.Count + 1;
+
+            if (tasks.Count > _id)
+            {
+                _id = tasks.Count;
+            };
+
+            _id = _id + 1;
+
+
+
+            taskModel.TaskId = _id;
             tasks.Add(taskModel);
             return RedirectToAction(nameof(Index));
-
-
-
         }
 
         // GET: TaskController/Edit/5
@@ -68,22 +79,18 @@ namespace TaskManagerMVC.Controllers
         // GET: TaskController/Delete/5
         public ActionResult Delete(int id)
         {
-            return View();
+            return View(tasks.FirstOrDefault(x => x.TaskId == id));
         }
 
         // POST: TaskController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public ActionResult Delete(int id, TaskModel taskModel)
         {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            TaskModel task = tasks.FirstOrDefault(x => x.TaskId == id);
+            tasks.Remove(task);
+            return RedirectToAction(nameof(Index));
+
         }
     }
 }
