@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using TaskManagerMVC.Models;
 
 namespace TaskManagerMVC.Repositories
@@ -18,27 +17,42 @@ namespace TaskManagerMVC.Repositories
         //TODO - Operations on data
         public void Add(TaskModel task)
         {
-            throw new NotImplementedException();
+            _context.Tasks.Add(task);
+            _context.SaveChanges();
         }
 
         public void Delete(int id)
         {
-            throw new NotImplementedException();
+            var result = _context.Tasks.SingleOrDefault(x => x.TaskId == id);
+
+            if (result != null)
+            {
+                _context.Tasks.Remove(result);
+                _context.SaveChanges();
+            }
+
         }
 
         public TaskModel Get(int id)
-        {
-            throw new NotImplementedException();
-        }
+            => _context.Tasks.SingleOrDefault(x => x.TaskId == id);
+
 
         public IQueryable<TaskModel> GetAllActive()
-        {
-            throw new NotImplementedException();
-        }
+            => _context.Tasks.Where(x => !x.Done);
 
         public void Update(int id, TaskModel task)
         {
-            throw new NotImplementedException();
+            var result = _context.Tasks.SingleOrDefault(x => x.TaskId == id);
+            if (result != null)
+            {
+                result.Name = task.Name;
+                result.Description = task.Description;
+                result.Done = task.Done;
+
+                _context.SaveChanges();
+            }
+
+
         }
     }
 }

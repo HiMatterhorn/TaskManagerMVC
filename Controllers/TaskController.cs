@@ -1,34 +1,31 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.Linq;
 using TaskManagerMVC.Models;
+using TaskManagerMVC.Repositories;
 
 namespace TaskManagerMVC.Controllers
 {
     public class TaskController : Controller
     {
-        private static IList<TaskModel> tasks = new List<TaskModel>()
+
+        private readonly ITaskRepository _taskRepository;
+
+        public TaskController(ITaskRepository taskRepository)
         {
-            new TaskModel(){TaskId =1, Name = "Wizyta u lekarza", Description = "Godzina 17:00", Done = false },
-            new TaskModel(){TaskId =2, Name = "Zrobić obiad", Description = "Pierogi", Done = false },
-
-        };
-
-        private static int _id = tasks.Count;
-
+            _taskRepository = taskRepository;
+        }
 
 
 
         // GET: Task
         public ActionResult Index()
         {
-            return View(tasks.Where(x => !x.Done));
+            return View(_taskRepository.GetAllActive());
         }
 
         // GET: Task/Details/5
         public ActionResult Details(int id)
         {
-            return View(tasks.FirstOrDefault(x => x.TaskId == id));
+            return View(_taskRepository.Get(id));
         }
 
         // GET: Task/Create
@@ -43,24 +40,14 @@ namespace TaskManagerMVC.Controllers
         public ActionResult Create(TaskModel taskModel)
         {
 
-            if (tasks.Count > _id)
-            {
-                _id = tasks.Count;
-            };
-
-            _id = _id + 1;
-
-
-
-            taskModel.TaskId = _id;
-            tasks.Add(taskModel);
+            _taskRepository.Add(taskModel);
             return RedirectToAction(nameof(Index));
         }
 
         // GET: Task/Edit/5
         public ActionResult Edit(int id)
         {
-            return View(tasks.FirstOrDefault(x => x.TaskId == id));
+            return View(_taskRepository.Get(id));
         }
 
         // POST: Task/Edit/5
@@ -68,9 +55,7 @@ namespace TaskManagerMVC.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit(int id, TaskModel taskModel)
         {
-            TaskModel task = tasks.FirstOrDefault(x => x.TaskId == id);
-            task.Name = taskModel.Name;
-            task.Description = taskModel.Description;
+            _taskRepository.Update(id, taskModel);
             return RedirectToAction(nameof(Index));
 
 
@@ -79,7 +64,7 @@ namespace TaskManagerMVC.Controllers
         // GET: Task/Delete/5
         public ActionResult Delete(int id)
         {
-            return View(tasks.FirstOrDefault(x => x.TaskId == id));
+            return View(_taskRepository.Get(id));
         }
 
         // POST: Task/Delete/5
@@ -87,8 +72,7 @@ namespace TaskManagerMVC.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Delete(int id, TaskModel taskModel)
         {
-            TaskModel task = tasks.FirstOrDefault(x => x.TaskId == id);
-            tasks.Remove(task);
+            _taskRepository.Delete(id);
             return RedirectToAction(nameof(Index));
 
         }
@@ -96,9 +80,9 @@ namespace TaskManagerMVC.Controllers
         //GET : Task/Done
         public IActionResult Done(int id)
         {
-            TaskModel task = tasks.FirstOrDefault(x => x.TaskId == id);
-
+            TaskModel task = _taskRepository.Get(id);
             task.Done = true;
+            _taskRepository.Update(id, task);
 
             return RedirectToAction(nameof(Index));
         }

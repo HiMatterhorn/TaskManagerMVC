@@ -25,6 +25,7 @@ namespace TaskManagerMVC
                 options.UseSqlServer(Configuration.GetConnectionString("TaskManagerDatabase"))
                 );
 
+            services.AddTransient<ITaskRepository, TaskRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

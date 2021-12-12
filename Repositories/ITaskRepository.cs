@@ -3,7 +3,7 @@ using TaskManagerMVC.Models;
 
 namespace TaskManagerMVC.Repositories
 {
-    interface ITaskRepository
+    public interface ITaskRepository
     {
 
         public TaskModel Get(int id);
